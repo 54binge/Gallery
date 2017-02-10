@@ -10,20 +10,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
+import android.view.View;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MAdapter.OnImageClickListener {
 
     private static final String TAG = "MainActivity";
 
@@ -31,12 +29,16 @@ public class MainActivity extends AppCompatActivity {
 
     private final String[] imgProjection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_MODIFIED};
 
-    private ArrayList<ImageBean> dataList = new ArrayList<>();
+    private ArrayList<ImageBean> mDataList = new ArrayList<>();
 
     @BindView(R.id.rcy)
-    RecyclerView crv;
+    RecyclerView mRecyclerView;
 
-    private MAdapter adapter;
+    @BindView(R.id.viewpager)
+    ViewPager mViewPager;
+
+    private MAdapter mRecyclerViewAdapter;
+    private ImagePagerAdapter mImagePagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,20 +46,37 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        crv.setLayoutManager(new GridLayoutManager(this, 3));
-        crv.addItemDecoration(new GridSpacingItemDecoration(3, 16, true));
-        adapter = new MAdapter(this, dataList);
-        crv.setAdapter(adapter);
+        initRecyclerView();
 
+        initViewPager();
+
+    }
+
+    private void initRecyclerView() {
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(3, 16, true));
+        mRecyclerViewAdapter = new MAdapter(mDataList, this);
+        mRecyclerView.setAdapter(mRecyclerViewAdapter);
+    }
+
+    private void initViewPager() {
+        mImagePagerAdapter = new ImagePagerAdapter(mDataList);
+        mViewPager.setAdapter(mImagePagerAdapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M){
-            checkPermission();
-        }else{
-            getLocalImages();
+        if(mDataList.isEmpty()){
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                checkPermission();
+            } else {
+                getLocalImages();
+            }
+
+            if (mRecyclerViewAdapter != null) {
+                mRecyclerViewAdapter.notifyDataSetChanged();
+            }
         }
     }
 
@@ -82,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getLocalImages() {
-        dataList.clear();
+        mDataList.clear();
         ContentResolver cr = getContentResolver();
         Cursor mCursor = cr.query(imgUri, imgProjection, null, null, MediaStore.Images.Media.DATE_MODIFIED + " desc ");
         if (mCursor != null) {
@@ -92,14 +111,16 @@ public class MainActivity extends AppCompatActivity {
                 long modifyTime = mCursor.getLong(mCursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED));
 
                 ImageBean imageBean = new ImageBean();
-                imageBean.url = "file://"+path;
-                dataList.add(imageBean);
+                imageBean.url = "file://" + path;
+                mDataList.add(imageBean);
             }
             mCursor.close();
         }
+    }
 
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
+    @Override
+    public void onImageClick(int position) {
+        mViewPager.setCurrentItem(position);
+        mViewPager.setVisibility(View.VISIBLE);
     }
 }

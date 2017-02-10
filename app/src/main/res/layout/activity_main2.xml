@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="gallery.binge.com.demo.MainActivity2">
+
+    <com.eftimoff.androipathview.PathView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pathView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:pathColor="#ff0000"
+        app:pathWidth="3dp"
+        app:svg="@raw/cam" />
+
+    <Button
+        android:id="@+id/btn1"
+        android:layout_width="140dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/pathView"
+        android:layout_marginTop="20dp"
+        android:onClick="onClick"
+        android:text="parallel" />
+
+    <Button
+        android:id="@+id/btn2"
+        android:layout_width="140dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/pathView"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/btn1"
+        android:onClick="onClick"
+        android:text="sequential" />
+
+
+</RelativeLayout>

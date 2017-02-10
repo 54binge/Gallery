@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "gallery.binge.com.demo"
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -30,5 +30,6 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.0.1'
     apt 'com.jakewharton:butterknife-compiler:8.0.1'
     compile 'com.github.bumptech.glide:glide:3.7.0'
-
+    compile 'com.eftimoff:android-pathview:1.0.8@aar'
+    compile 'com.uwetrottmann.photoview:library:1.2.4'
 }
